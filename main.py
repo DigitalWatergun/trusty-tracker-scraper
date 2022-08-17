@@ -14,16 +14,26 @@ def scrapeUrl(url):
     return html
 
 
+def filterHtml(html, carrier): 
+    if carrier == "usps": 
+        uspsScraper = UspsScraper(html)
+        trackingInfo = uspsScraper.findTrackingInfo()
+        del uspsScraper
+        return trackingInfo
+
+
 if __name__ == "__main__": 
     parser = argparse.ArgumentParser(description="Web scraper that takes your carrier and tracking number, then fetches the tracking history for that package.")
     parser.add_argument("trackingNumber", metavar="trackingNumber", type=str, help="The tracking number you want to track.")
     parser.add_argument("carrier", metavar="carrier", type=str, help="The shipping carrier that uses this tracking number. Ex. USPS, UPS, FedEx")
     args = parser.parse_args()
 
-    url = "https://tools.usps.com/go/TrackConfirmAction_input?qtc_tLabels1=" + args.trackingNumber
-    html = scrapeUrl(url)
+    if args.carrier == "usps": 
+        url = "https://tools.usps.com/go/TrackConfirmAction_input?qtc_tLabels1=" + args.trackingNumber
+    elif args.carrier == "fedex": 
+        url = "https://www.fedex.com/fedextrack/?trknbr=" + args.trackingNumber
 
-    uspsScraper = UspsScraper(html)
-    eta = uspsScraper.findEstimatedDelivery()
-    print(eta)
-    uspsScraper.findTrackingHistory()
+    html = scrapeUrl(url)
+    trackingInfo = filterHtml(html, args.carrier)
+    print(trackingInfo)
+

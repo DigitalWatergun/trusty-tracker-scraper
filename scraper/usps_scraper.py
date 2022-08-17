@@ -31,13 +31,36 @@ class UspsScraper:
     def findTrackingHistory(self): 
         statusList = self.html.find("div", class_="panel-actions-content thPanalAction")
         spans = statusList.findAll("span")
-        for span in spans:
-            if span.strong: 
-                timeAndDate = self.removeWhiteSpace(span.strong.text)
-                print()
-                print(f"Time and date: {timeAndDate}")
-            elif "Shipping Partner:" in span.text:
-                print(self.removeWhiteSpace(span.text))
-            else: 
-                print(span.text.strip())
+        
+        spansSorted = []
+        start, end = 0, 1
+        while end < len(spans): 
+            if spans[end].strong: 
+                info = spans[start:end]
+                cleanInfo = []
+                cleanInfo.append(self.removeWhiteSpace(info[0].strong.text))
+                for span in info[1:]: 
+                    cleanInfo.append(self.removeWhiteSpace(span.text))
+                spansSorted.append(cleanInfo)
+                start = end 
+            end += 1
+
+        trackingHistory = []
+        for item in spansSorted: 
+            history = {}
+            history["date"] = item[0]
+            history["status"] = item[1]
+            history["location"] = item[2] if len(item) == 3 else ""
+            history["details"] = item[3:] if len(item) > 3 else ""
+            trackingHistory.append(history)
+
     
+        return trackingHistory
+
+    
+    def findTrackingInfo(self): 
+        trackingInfo = {}
+        trackingInfo["eta"] = self.findEstimatedDelivery()
+        trackingInfo["trackingHistory"] = self.findTrackingHistory()
+
+        return trackingInfo
