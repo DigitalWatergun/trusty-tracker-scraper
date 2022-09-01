@@ -7,6 +7,8 @@ name = "pypi"
 requests = "*"
 beautifulsoup4 = "*"
 argparse = "*"
+sqlalchemy = "*"
+psycopg2 = "*"
 
 [dev-packages]
 
