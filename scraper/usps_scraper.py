@@ -38,11 +38,13 @@ def findTrackingHistory(html):
     for div in divs:
         history = {}
     
+        history["date"] = removeWhiteSpace(div.select(".tb-date")[0].text)
         history["status_details"] = div.select(".tb-status-detail")[0].text
         if div.select(".tb-location"):
             history["location"] = removeWhiteSpace(div.select(".tb-location")[0].text)
-        history["date"] = removeWhiteSpace(div.select(".tb-date")[0].text)
-
+        else: 
+            history["location"] = ""
+        
         trackingHistory.append(history)
 
     return trackingHistory
