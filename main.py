@@ -52,8 +52,7 @@ if __name__ == "__main__":
 
     html = scrape_url(url)
     tracking_info = filter_html(html, args.carrier)
-    print(tracking_info)
-    generate_import_data(args.tracking_number, tracking_info, url)
+    # generate_import_data(args.tracking_number, tracking_info, url)
 
     # session = create_session()
     # print(session)

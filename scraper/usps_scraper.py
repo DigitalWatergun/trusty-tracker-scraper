@@ -24,32 +24,26 @@ def findEstimatedDelivery(html):
         return "No estimated delivery or the package was already delivered"
 
 
+def findTrackingStatus(html): 
+    status = html.findAll("p", class_="tb-status")
+    return status[0].text
+
+
 def findTrackingHistory(html): 
-    statusList = html.find("div", class_="panel-actions-content thPanalAction")
-    spans = statusList.findAll("span")
-    
-    spansSorted = []
-    start, end = 0, 1
-    while end < len(spans): 
-        if spans[end].strong: 
-            info = spans[start:end]
-            cleanInfo = []
-            cleanInfo.append(removeWhiteSpace(info[0].strong.text))
-            for span in info[1:]: 
-                cleanInfo.append(removeWhiteSpace(span.text))
-            spansSorted.append(cleanInfo)
-            start = end 
-        end += 1
+    statusList = html.find("div", class_="tracking-progress-bar-status-container")
+    divs = statusList.findAll("div", class_="tb-step current-step")
+    divs.extend(statusList.findAll("div", class_="tb-step collapsed"))
 
     trackingHistory = []
-    for item in spansSorted: 
+    for div in divs:
         history = {}
-        history["date"] = item[0]
-        history["status"] = item[1]
-        history["location"] = item[2] if len(item) == 3 else ""
-        history["details"] = item[3:] if len(item) > 3 else ""
-        trackingHistory.append(history)
+    
+        history["status_details"] = div.select(".tb-status-detail")[0].text
+        if div.select(".tb-location"):
+            history["location"] = removeWhiteSpace(div.select(".tb-location")[0].text)
+        history["date"] = removeWhiteSpace(div.select(".tb-date")[0].text)
 
+        trackingHistory.append(history)
 
     return trackingHistory
 
@@ -57,6 +51,7 @@ def findTrackingHistory(html):
 def findTrackingInfo(html): 
     trackingInfo = {}
     trackingInfo["eta"] = findEstimatedDelivery(html)
+    trackingInfo["status"] = findTrackingStatus(html)
     trackingInfo["trackingHistory"] = findTrackingHistory(html)
 
     return trackingInfo
