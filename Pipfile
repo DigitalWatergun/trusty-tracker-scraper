@@ -9,8 +9,11 @@ beautifulsoup4 = "*"
 argparse = "*"
 sqlalchemy = "*"
 psycopg2 = "*"
+timezonefinder = "*"
+geopy = "*"
 
 [dev-packages]
+pylint = "*"
 
 [requires]
 python_version = "3.9"

@@ -1,11 +1,9 @@
-
-
-def removeWhiteSpace(element): 
+def remove_white_space(element):
     return " ".join(element.strip().split())
 
 
-def findEstimatedDelivery(html):
-    try: 
+def find_estimated_delivery(html):
+    try:
         eta = ""
         etaDayElement = html.find("em", class_="day")
         eta += etaDayElement.text
@@ -20,40 +18,41 @@ def findEstimatedDelivery(html):
         eta += " " + etaTimeElement.text.strip().split()[0]
 
         return f"Estimated Delivery by: {eta}"
-    except: 
+    except:
         return "No estimated delivery or the package was already delivered"
 
 
-def findTrackingStatus(html): 
+def find_tracking_status(html):
     status = html.findAll("p", class_="tb-status")
     return status[0].text
 
 
-def findTrackingHistory(html): 
-    statusList = html.find("div", class_="tracking-progress-bar-status-container")
-    divs = statusList.findAll("div", class_="tb-step current-step")
-    divs.extend(statusList.findAll("div", class_="tb-step collapsed"))
+def find_tracking_history(html):
+    status_list = html.find("div", class_="tracking-progress-bar-status-container")
+    divs = status_list.findAll("div", class_="tb-step current-step")
+    divs.extend(status_list.findAll("div", class_="tb-step collapsed"))
 
-    trackingHistory = []
+    tracking_history = []
     for div in divs:
         history = {}
-    
-        history["date"] = removeWhiteSpace(div.select(".tb-date")[0].text)
+
+        history["date"] = remove_white_space(div.select(".tb-date")[0].text)
         history["status_details"] = div.select(".tb-status-detail")[0].text
         if div.select(".tb-location"):
-            history["location"] = removeWhiteSpace(div.select(".tb-location")[0].text)
-        else: 
+            history["location"] = remove_white_space(div.select(".tb-location")[0].text)
+        else:
             history["location"] = ""
-        
-        trackingHistory.append(history)
 
-    return trackingHistory
+        tracking_history.append(history)
+
+    return tracking_history
 
 
-def findTrackingInfo(html): 
-    trackingInfo = {}
-    trackingInfo["eta"] = findEstimatedDelivery(html)
-    trackingInfo["status"] = findTrackingStatus(html)
-    trackingInfo["trackingHistory"] = findTrackingHistory(html)
+def find_tracking_info(html):
+    tracking_info = {}
+    tracking_info["eta"] = find_estimated_delivery(html)
+    tracking_info["status"] = find_tracking_status(html)
+    tracking_info["trackingHistory"] = find_tracking_history(html)
+    print(tracking_info)
 
-    return trackingInfo
+    return tracking_info
