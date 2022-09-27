@@ -5,7 +5,8 @@ from bs4 import BeautifulSoup
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from scraper import usps_scraper
-from controllers.tracking_hist_controller import *
+from timezone import timezone
+
 
 RDS_USER = os.environ["RDS_USER"]
 RDS_PASS = os.environ["RDS_PASS"]
@@ -42,8 +43,8 @@ def filter_html(html, carrier):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Web scraper that takes your carrier and tracking number, then fetches the tracking history for that package."
-    )
+        description="Web scraper that takes your carrier and tracking number, then fetches \
+            the tracking history for that package.")
     parser.add_argument(
         "tracking_number",
         metavar="tracking_number",
@@ -68,6 +69,10 @@ if __name__ == "__main__":
 
     html = scrape_url(url)
     tracking_info = filter_html(html, args.carrier)
+    timezone.convert_timezone_to_utc(
+        tracking_info["trackingHistory"][0]["date"],
+        tracking_info["trackingHistory"][0]["location"]
+    )
     # generate_import_data(args.tracking_number, tracking_info, url)
 
     # session = create_session()

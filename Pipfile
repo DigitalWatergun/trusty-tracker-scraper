@@ -11,9 +11,11 @@ sqlalchemy = "*"
 psycopg2 = "*"
 timezonefinder = "*"
 geopy = "*"
+pytz = "*"
 
 [dev-packages]
 pylint = "*"
+autopep8 = "*"
 
 [requires]
 python_version = "3.9"
