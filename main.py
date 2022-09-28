@@ -61,11 +61,6 @@ if __name__ == "__main__":
     html = scrape_url(url)
     new_tracking_info = filter_html(html, args.carrier, args.tracking_number)
 
-    # timezone.convert_timezone_to_utc(
-    #     tracking_info["trackingHistory"][0]["date"],
-    #     tracking_info["trackingHistory"][0]["location"]
-    # )
-
     session = create_session()
     print(session)
     db_info = tracking_info.TrackingInfo(
