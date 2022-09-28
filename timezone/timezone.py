@@ -52,5 +52,6 @@ def convert_timezone_to_utc(date, location):
     local_dt = local_timezone.localize(naive_datetime, is_dst=None)
     utc_dt = local_dt.astimezone(pytz.utc)
 
-    utc_dt.strftime("%Y-%m-%d %H:%M:%S")
-    print(utc_dt)
+    utc_date_str = utc_dt.strftime("%Y-%m-%dT%H:%M")
+
+    return utc_date_str

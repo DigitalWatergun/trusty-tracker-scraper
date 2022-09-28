@@ -5,7 +5,6 @@ from bs4 import BeautifulSoup
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from scraper import usps_scraper
-from timezone import timezone
 
 
 RDS_USER = os.environ["RDS_USER"]
@@ -35,28 +34,19 @@ def scrape_url(url):
     return html
 
 
-def filter_html(html, carrier):
+def filter_html(html, carrier, tracking_number):
     if carrier == "usps":
-        tracking_info = usps_scraper.find_tracking_info(html)
+        tracking_info = usps_scraper.find_tracking_info(html, tracking_number)
         return tracking_info
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Web scraper that takes your carrier and tracking number, then fetches \
-            the tracking history for that package.")
-    parser.add_argument(
-        "tracking_number",
-        metavar="tracking_number",
-        type=str,
-        help="The tracking number you want to track.",
-    )
-    parser.add_argument(
-        "carrier",
-        metavar="carrier",
-        type=str,
-        help="The shipping carrier that uses this tracking number. Ex. USPS, UPS, FedEx",
-    )
+        description="Web scraper that takes your carrier and tracking number, then fetches the tracking history for that package.")
+    parser.add_argument("tracking_number", metavar="tracking_number", type=str,
+                        help="The tracking number you want to track.")
+    parser.add_argument("carrier", metavar="carrier", type=str,
+                        help="The shipping carrier that uses this tracking number. Ex. USPS, UPS, FedEx")
     args = parser.parse_args()
 
     if args.carrier == "usps":
@@ -68,12 +58,12 @@ if __name__ == "__main__":
         url = "https://www.fedex.com/fedextrack/?trknbr=" + args.tracking_number
 
     html = scrape_url(url)
-    tracking_info = filter_html(html, args.carrier)
-    timezone.convert_timezone_to_utc(
-        tracking_info["trackingHistory"][0]["date"],
-        tracking_info["trackingHistory"][0]["location"]
-    )
-    # generate_import_data(args.tracking_number, tracking_info, url)
+    tracking_info = filter_html(html, args.carrier, args.tracking_number)
+
+    # timezone.convert_timezone_to_utc(
+    #     tracking_info["trackingHistory"][0]["date"],
+    #     tracking_info["trackingHistory"][0]["location"]
+    # )
 
     # session = create_session()
     # print(session)
