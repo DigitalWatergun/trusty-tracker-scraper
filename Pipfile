@@ -8,10 +8,11 @@ requests = "*"
 beautifulsoup4 = "*"
 argparse = "*"
 sqlalchemy = "*"
-psycopg2 = "*"
 timezonefinder = "*"
 geopy = "*"
 pytz = "*"
+psycopg2 = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 pylint = "*"

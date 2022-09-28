@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from scraper import usps_scraper
+from models import tracking_hist, tracking_info
 
 
 RDS_USER = os.environ["RDS_USER"]
@@ -58,13 +59,22 @@ if __name__ == "__main__":
         url = "https://www.fedex.com/fedextrack/?trknbr=" + args.tracking_number
 
     html = scrape_url(url)
-    tracking_info = filter_html(html, args.carrier, args.tracking_number)
+    new_tracking_info = filter_html(html, args.carrier, args.tracking_number)
 
     # timezone.convert_timezone_to_utc(
     #     tracking_info["trackingHistory"][0]["date"],
     #     tracking_info["trackingHistory"][0]["location"]
     # )
 
-    # session = create_session()
-    # print(session)
-    # session.close()
+    session = create_session()
+    print(session)
+    db_info = tracking_info.TrackingInfo(
+        tracking_id=new_tracking_info["tracking_id"],
+        product_desc="",
+        status=new_tracking_info["status"],
+        carrier=new_tracking_info["carrier"],
+        eta=new_tracking_info["eta"],
+    )
+    session.add(db_info)
+    session.commit()
+    session.close()

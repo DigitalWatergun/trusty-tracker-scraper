@@ -55,6 +55,6 @@ def find_tracking_info(html, tracking_number):
     tracking_info["eta"] = find_estimated_delivery(html)
     tracking_info["status"] = find_tracking_status(html)
     tracking_info["tracking_history"] = find_tracking_history(html, tracking_number)
-    print(tracking_info)
+    # print(tracking_info)
 
     return tracking_info
